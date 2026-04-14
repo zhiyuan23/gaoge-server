@@ -145,20 +145,18 @@ jobs:
         run: |
           ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "
             cd ${{ secrets.DEPLOY_PATH }} &&
+            export DATABASE_URL='${{ secrets.DATABASE_URL }}' &&
             pnpm install --frozen-lockfile &&
             pnpm db:generate
           "
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Run migrations
         run: |
           ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "
             cd ${{ secrets.DEPLOY_PATH }} &&
+            export DATABASE_URL='${{ secrets.DATABASE_URL }}' &&
             pnpm db:migrate --name production
           "
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
       - name: Restart PM2
         run: |
