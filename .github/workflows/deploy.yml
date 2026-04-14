@@ -109,9 +109,6 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
-      - name: Build
-        run: pnpm build
-
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.8.0
         with:
@@ -130,6 +127,7 @@ jobs:
             --exclude='.env.production' \
             --exclude='node_modules' \
             --exclude='.git' \
+            --exclude='dist' \
             --exclude='.github' \
             --exclude='*.log' \
             --exclude='logs' \
@@ -146,7 +144,8 @@ jobs:
             cd ${{ secrets.DEPLOY_PATH }} &&
             export DATABASE_URL='${{ secrets.DATABASE_URL }}' &&
             pnpm install --frozen-lockfile &&
-            pnpm db:generate
+            pnpm db:generate &&
+            pnpm build
           "
 
       - name: Run migrations
