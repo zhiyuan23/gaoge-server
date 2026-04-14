@@ -119,7 +119,7 @@ jobs:
       - name: Add server known hosts
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.DEPLOY_HOST }} ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAyBB" >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
 
       - name: Deploy via RSYNC
