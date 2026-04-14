@@ -130,7 +130,6 @@ jobs:
             --exclude='.env.production' \
             --exclude='node_modules' \
             --exclude='.git' \
-            --exclude='dist' \
             --exclude='.github' \
             --exclude='*.log' \
             --exclude='logs' \
