@@ -1,0 +1,91 @@
+{
+  // ============================================
+  // ESLint 配置
+  // ============================================
+  "eslint.useFlatConfig": true,
+  "eslint.validate": ["typescript", "typescriptreact", "typescriptvueSFC"],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
+  },
+
+  // ============================================
+  // Prettier 配置
+  // ============================================
+  "prettier.enable": true,
+  "prettier.tabWidth": 2,
+  "prettier.semi": true,
+  "prettier.singleQuote": true,
+  "prettier.trailingComma": "es5",
+  "prettier.printWidth": 100,
+  "prettier.vueIndentScriptAndStyle": false,
+
+  // ============================================
+  // 编辑器配置
+  // ============================================
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeLens": false,
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": false,
+    "strings": false
+  },
+  "editor.tabSize": 2,
+
+  // ============================================
+  // TypeScript 配置
+  // ============================================
+  "js/ts.updateImportsOnFileMove.enabled": "always",
+  "js/ts.suggest.autoImports": true,
+
+  // ============================================
+  // 文件关联
+  // ============================================
+  "files.associations": {
+    "*.vue": "vue",
+    "*.wxml": "html",
+    "*.wxss": "css"
+  },
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/coverage": true
+  },
+
+  // ============================================
+  // SQLTools 配置
+  // ============================================
+  "sqltools.connections": [
+    {
+      "ssh": "Disabled",
+      "previewLimit": 50,
+      "server": "localhost",
+      "port": 5432,
+      "driver": "PostgreSQL",
+      "name": "gaoge_db",
+      "username": "snow",
+      "database": "gaoge_db"
+    }
+  ],
+
+  // ============================================
+  // Prisma 配置
+  // ============================================
+  "prisma.pinToPrisma6": true,
+
+  // ============================================
+  // 其他配置
+  // ============================================
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/coverage": true,
+    "**/.git": true
+  },
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000,
+  "[prisma]": {
+    "editor.defaultFormatter": "Prisma.prisma"
+  }
+}

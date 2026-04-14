@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s \"https://api.github.com/repos/zhiyuan23/gaoge-server/actions/runs?per_page=3\")",
+      "Bash(curl -s \"https://api.github.com/repos/zhiyuan23/gaoge-server/actions/runs?per_page=5\")",
+      "Bash(curl -s \"https://api.github.com/repos/zhiyuan23/gaoge-server/actions/runs/24061603902/jobs\")",
+      "Bash(pg_isready -h localhost -p 5432)",
+      "Bash(psql -h localhost -p 5432 -U snow -l)",
+      "Bash(pkill -f \"nest start\")",
+      "Bash(psql -h localhost -p 5432 -U postgres -l)",
+      "Bash(pkill -9 -f \"nest\")",
+      "Bash(lsof -ti:3000)",
+      "Bash(CI=true pnpm prisma:*)",
+      "Bash(find . -name \"*.ts\" -exec sed -i '' 's/import \\\\\\(.*\\\\\\) from \"\\\\.\\\\.\\\\/\\\\.\\\\.\\\\/\\\\.\\\\.\\\\/common/import \\\\1 from \"@\\\\/common/g' {} \\\\;)",
+      "Bash(find . -name \"*.ts\" -exec sed -i '' 's/import \\\\\\(.*\\\\\\) from \"\\\\.\\\\.\\\\/\\\\.\\\\.\\\\/common/import \\\\1 from \"@\\\\/common/g' {} \\\\;)",
+      "Read(//Users/snow/Documents/Gaoge/**)",
+      "Bash(sed -i '' '59s/const result = //' src/modules/team/team.service.ts)",
+      "Bash(pnpm lint:*)"
+    ]
+  }
+}
