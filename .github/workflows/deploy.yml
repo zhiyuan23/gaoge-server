@@ -155,7 +155,7 @@ jobs:
           ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "
             cd ${{ secrets.DEPLOY_PATH }} &&
             export DATABASE_URL='${{ secrets.DATABASE_URL }}' &&
-            pnpm db:migrate --name production
+            pnpm db:migrate:prod
           "
 
       - name: Restart PM2
