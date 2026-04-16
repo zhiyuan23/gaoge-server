@@ -157,11 +157,12 @@ jobs:
       - name: Prepare application on server
         run: |
           ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "bash -lc '
-            set -euo pipefail
+            set -eo pipefail
             export PNPM_HOME=\"\$HOME/.local/share/pnpm\"
             export PATH=\"\$PNPM_HOME:\$HOME/bin:\$PATH\"
-            [ -f ~/.bashrc ] && . ~/.bashrc || true
-            [ -f ~/.profile ] && . ~/.profile || true
+            [ -f ~/.bashrc ] && set +u && . ~/.bashrc && set -u || true
+            [ -f ~/.profile ] && set +u && . ~/.profile && set -u || true
+            set -u
 
             echo \"Remote user: \$(whoami)\"
             echo \"Deploy path: ${{ secrets.DEPLOY_PATH }}\"
@@ -190,11 +191,12 @@ jobs:
       - name: Run migrations
         run: |
           ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "bash -lc '
-            set -euo pipefail
+            set -eo pipefail
             export PNPM_HOME=\"\$HOME/.local/share/pnpm\"
             export PATH=\"\$PNPM_HOME:\$HOME/bin:\$PATH\"
-            [ -f ~/.bashrc ] && . ~/.bashrc || true
-            [ -f ~/.profile ] && . ~/.profile || true
+            [ -f ~/.bashrc ] && set +u && . ~/.bashrc && set -u || true
+            [ -f ~/.profile ] && set +u && . ~/.profile && set -u || true
+            set -u
 
             cd ${{ secrets.DEPLOY_PATH }}
             export DATABASE_URL=\"${{ secrets.DATABASE_URL }}\"
@@ -204,11 +206,12 @@ jobs:
       - name: Restart PM2
         run: |
           ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "bash -lc '
-            set -euo pipefail
+            set -eo pipefail
             export PNPM_HOME=\"\$HOME/.local/share/pnpm\"
             export PATH=\"\$PNPM_HOME:\$HOME/bin:\$PATH\"
-            [ -f ~/.bashrc ] && . ~/.bashrc || true
-            [ -f ~/.profile ] && . ~/.profile || true
+            [ -f ~/.bashrc ] && set +u && . ~/.bashrc && set -u || true
+            [ -f ~/.profile ] && set +u && . ~/.profile && set -u || true
+            set -u
 
             cd ${{ secrets.DEPLOY_PATH }}
             if pm2 describe gaoge-server >/dev/null 2>&1; then
@@ -225,8 +228,8 @@ jobs:
           ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "bash -lc '
             export PNPM_HOME=\"\$HOME/.local/share/pnpm\"
             export PATH=\"\$PNPM_HOME:\$HOME/bin:\$PATH\"
-            [ -f ~/.bashrc ] && . ~/.bashrc || true
-            [ -f ~/.profile ] && . ~/.profile || true
+            [ -f ~/.bashrc ] && set +u && . ~/.bashrc && set -u || true
+            [ -f ~/.profile ] && set +u && . ~/.profile && set -u || true
 
             pm2 status gaoge-server
             pm2 logs gaoge-server --lines 50 --nostream
