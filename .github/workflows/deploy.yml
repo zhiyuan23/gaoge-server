@@ -156,46 +156,81 @@ jobs:
 
       - name: Prepare application on server
         run: |
-          ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "
-            set -e &&
-            cd ${{ secrets.DEPLOY_PATH }} &&
-            test -f .env &&
-            command -v pnpm >/dev/null &&
-            command -v pm2 >/dev/null &&
-            pnpm install --frozen-lockfile --production &&
-            export DATABASE_URL='${{ secrets.DATABASE_URL }}' &&
+          ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "bash -lc '
+            set -euo pipefail
+            export PNPM_HOME=\"\$HOME/.local/share/pnpm\"
+            export PATH=\"\$PNPM_HOME:\$HOME/bin:\$PATH\"
+            [ -f ~/.bashrc ] && . ~/.bashrc || true
+            [ -f ~/.profile ] && . ~/.profile || true
+
+            echo \"Remote user: \$(whoami)\"
+            echo \"Deploy path: ${{ secrets.DEPLOY_PATH }}\"
+            echo \"PATH=\$PATH\"
+
+            cd ${{ secrets.DEPLOY_PATH }}
+
+            if [ ! -f .env ]; then
+              echo \".env file is missing in ${{ secrets.DEPLOY_PATH }}\" >&2
+              exit 1
+            fi
+
+            command -v node >/dev/null 2>&1 || { echo \"node not found\" >&2; exit 1; }
+            command -v pnpm >/dev/null 2>&1 || { echo \"pnpm not found\" >&2; exit 1; }
+            command -v pm2 >/dev/null 2>&1 || { echo \"pm2 not found\" >&2; exit 1; }
+
+            node -v
+            pnpm --version
+            pm2 -v
+
+            pnpm install --frozen-lockfile --production
+            export DATABASE_URL=\"${{ secrets.DATABASE_URL }}\"
             pnpm db:generate
-          "
+          '"
 
       - name: Run migrations
         run: |
-          ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "
-            set -e &&
-            cd ${{ secrets.DEPLOY_PATH }} &&
-            export DATABASE_URL='${{ secrets.DATABASE_URL }}' &&
+          ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "bash -lc '
+            set -euo pipefail
+            export PNPM_HOME=\"\$HOME/.local/share/pnpm\"
+            export PATH=\"\$PNPM_HOME:\$HOME/bin:\$PATH\"
+            [ -f ~/.bashrc ] && . ~/.bashrc || true
+            [ -f ~/.profile ] && . ~/.profile || true
+
+            cd ${{ secrets.DEPLOY_PATH }}
+            export DATABASE_URL=\"${{ secrets.DATABASE_URL }}\"
             pnpm db:migrate:prod
-          "
+          '"
 
       - name: Restart PM2
         run: |
-          ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "
-            set -e &&
-            cd ${{ secrets.DEPLOY_PATH }} &&
+          ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "bash -lc '
+            set -euo pipefail
+            export PNPM_HOME=\"\$HOME/.local/share/pnpm\"
+            export PATH=\"\$PNPM_HOME:\$HOME/bin:\$PATH\"
+            [ -f ~/.bashrc ] && . ~/.bashrc || true
+            [ -f ~/.profile ] && . ~/.profile || true
+
+            cd ${{ secrets.DEPLOY_PATH }}
             if pm2 describe gaoge-server >/dev/null 2>&1; then
               pm2 reload ecosystem.config.js --only gaoge-server --update-env
             else
               pm2 start ecosystem.config.js --only gaoge-server --update-env
-            fi &&
+            fi
             pm2 save
-          "
+          '"
 
       - name: Show PM2 status on server
         if: always()
         run: |
-          ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "
-            pm2 status gaoge-server &&
+          ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "bash -lc '
+            export PNPM_HOME=\"\$HOME/.local/share/pnpm\"
+            export PATH=\"\$PNPM_HOME:\$HOME/bin:\$PATH\"
+            [ -f ~/.bashrc ] && . ~/.bashrc || true
+            [ -f ~/.profile ] && . ~/.profile || true
+
+            pm2 status gaoge-server
             pm2 logs gaoge-server --lines 50 --nostream
-          "
+          '"
 
       - name: Health check
         run: |
