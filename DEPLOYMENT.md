@@ -181,7 +181,7 @@ pnpm start:dev
 
 # 生产模式（使用 PM2）
 pnpm build
-pm2 start dist/main.js --name gaoge-server
+pm2 start ecosystem.config.js --only gaoge-server
 
 # 设置开机自启
 pm2 startup

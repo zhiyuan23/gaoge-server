@@ -59,6 +59,8 @@ $ pnpm run start:dev
 
 # production mode
 $ pnpm run start:prod
+# equivalent entry file
+$ node dist/main.js
 ```
 
 ## Run tests

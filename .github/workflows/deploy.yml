@@ -5,6 +5,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
+concurrency:
+  group: deploy-production
+  cancel-in-progress: true
+
 env:
   NODE_VERSION: '22'
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -109,6 +113,9 @@ jobs:
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
 
+      - name: Build production package
+        run: pnpm build
+
       - name: Setup SSH
         uses: webfactory/ssh-agent@v0.8.0
         with:
@@ -120,6 +127,12 @@ jobs:
           ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
 
+      - name: Ensure deploy directory exists
+        run: |
+          ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "
+            mkdir -p ${{ secrets.DEPLOY_PATH }}
+          "
+
       - name: Deploy via RSYNC
         run: |
           rsync -avz --delete \
@@ -127,30 +140,37 @@ jobs:
             --exclude='.env.production' \
             --exclude='node_modules' \
             --exclude='.git' \
-            --exclude='dist' \
+            --exclude='src' \
+            --exclude='test' \
+            --exclude='tsconfig*' \
+            --exclude='.eslint*' \
+            --exclude='.prettier*' \
             --exclude='.github' \
             --exclude='*.log' \
             --exclude='logs' \
             --exclude='.vscode' \
             --exclude='.idea' \
             --exclude='coverage' \
-            --exclude='*.log' \
             ./ \
             ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:${{ secrets.DEPLOY_PATH }}
 
-      - name: Install dependencies on server
+      - name: Prepare application on server
         run: |
           ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "
+            set -e &&
             cd ${{ secrets.DEPLOY_PATH }} &&
+            test -f .env &&
+            command -v pnpm >/dev/null &&
+            command -v pm2 >/dev/null &&
+            pnpm install --frozen-lockfile --production &&
             export DATABASE_URL='${{ secrets.DATABASE_URL }}' &&
-            pnpm install --frozen-lockfile &&
-            pnpm db:generate &&
-            pnpm build
+            pnpm db:generate
           "
 
       - name: Run migrations
         run: |
           ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "
+            set -e &&
             cd ${{ secrets.DEPLOY_PATH }} &&
             export DATABASE_URL='${{ secrets.DATABASE_URL }}' &&
             pnpm db:migrate:prod
@@ -159,11 +179,30 @@ jobs:
       - name: Restart PM2
         run: |
           ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "
+            set -e &&
             cd ${{ secrets.DEPLOY_PATH }} &&
-            pm2 restart gaoge-server || pm2 start ecosystem.config.js
+            if pm2 describe gaoge-server >/dev/null 2>&1; then
+              pm2 reload ecosystem.config.js --only gaoge-server --update-env
+            else
+              pm2 start ecosystem.config.js --only gaoge-server --update-env
+            fi &&
+            pm2 save
+          "
+
+      - name: Show PM2 status on server
+        if: always()
+        run: |
+          ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "
+            pm2 status gaoge-server &&
+            pm2 logs gaoge-server --lines 50 --nostream
           "
 
       - name: Health check
         run: |
-          sleep 5
-          curl -f ${{ secrets.HEALTH_URL }} || exit 1
+          for i in {1..12}; do
+            if curl -fsS ${{ secrets.HEALTH_URL }}; then
+              exit 0
+            fi
+            sleep 5
+          done
+          exit 1

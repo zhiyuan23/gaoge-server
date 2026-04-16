@@ -1,7 +1,7 @@
 module.exports = {
   apps: [{
     name: 'gaoge-server',
-    script: 'dist/src/main.js',
+    script: 'dist/main.js',
     instances: 'max',
     exec_mode: 'cluster',
     env: {

@@ -264,7 +264,7 @@ npm run build
 
 # 5. 使用 PM2 管理进程
 npm install -g pm2
-pm2 start dist/main.js --name gaoge-server
+pm2 start ecosystem.config.js --only gaoge-server
 
 # 6. 设置开机自启
 pm2 startup
