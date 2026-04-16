@@ -1,6 +1,6 @@
 import type { CreateTeamFundDto, QueryTeamFundDto, UpdateTeamFundDto } from './dto/create-team-fund.dto'
-import type { PrismaService } from '@/common/prisma/prisma.service'
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
+import { PrismaService } from '@/common/prisma/prisma.service'
 
 export interface FundSummary {
   totalIncome: number;

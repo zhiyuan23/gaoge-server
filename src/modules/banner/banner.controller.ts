@@ -10,8 +10,8 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
-import type { BannerService } from './banner.service'
 import type { CreateBannerDto, UpdateBannerDto } from './dto/create-banner.dto'
+import { BannerService } from './banner.service'
 
 @Controller('banner')
 export class BannerController {

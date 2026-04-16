@@ -1,6 +1,5 @@
 import type { CreatePlayerDto } from './dto/create-player.dto'
 import type { UpdatePlayerDto } from './dto/update-player.dto'
-import type { PlayersService } from './players.service'
 import {
   Body,
   Controller,
@@ -11,6 +10,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common'
+import { PlayersService } from './players.service'
 
 @Controller('players')
 export class PlayersController {

@@ -1,7 +1,7 @@
-import type { ConfigService } from '@nestjs/config'
 import { Buffer } from 'node:buffer'
 import * as crypto from 'node:crypto'
 import { Injectable, Logger } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
 
 export interface WechatSession {
   openid: string;

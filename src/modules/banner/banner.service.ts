@@ -1,5 +1,5 @@
-import type { PrismaService } from '@/common/prisma/prisma.service'
 import { Injectable, NotFoundException } from '@nestjs/common'
+import { PrismaService } from '@/common/prisma/prisma.service'
 import type { CreateBannerDto, UpdateBannerDto } from './dto/create-banner.dto'
 
 @Injectable()

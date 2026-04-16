@@ -1,5 +1,4 @@
 import type { CreateTeamFundDto, QueryTeamFundDto, UpdateTeamFundDto } from './dto/create-team-fund.dto'
-import type { TeamService } from './team.service'
 import {
   Body,
   Controller,
@@ -14,6 +13,7 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
+import { TeamService } from './team.service'
 
 @Controller('team')
 export class TeamController {

@@ -1,8 +1,8 @@
-import type { JwtService } from '@nestjs/jwt'
-import type { PrismaService } from '../../../common/prisma/prisma.service'
-import type { WechatService } from '../../../common/wechat/wechat.service'
 import type { PhoneLoginDto, WechatLoginDto } from '../dto/login.dto'
 import { BadRequestException, Injectable, Logger, UnauthorizedException } from '@nestjs/common'
+import { JwtService } from '@nestjs/jwt'
+import { PrismaService } from '../../../common/prisma/prisma.service'
+import { WechatService } from '../../../common/wechat/wechat.service'
 
 export interface LoginResponse {
   user: any;
