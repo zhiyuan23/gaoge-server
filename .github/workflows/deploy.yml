@@ -133,6 +133,17 @@ jobs:
             mkdir -p ${{ secrets.DEPLOY_PATH }}
           "
 
+      - name: Write environment file on server
+        run: |
+          if [ -z "${{ secrets.DEPLOY_ENV_FILE }}" ]; then
+            echo "GitHub secret DEPLOY_ENV_FILE is empty" >&2
+            exit 1
+          fi
+
+          ssh ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "cat > ${{ secrets.DEPLOY_PATH }}/.env" <<'EOF'
+          ${{ secrets.DEPLOY_ENV_FILE }}
+          EOF
+
       - name: Deploy via RSYNC
         run: |
           rsync -avz --delete \
