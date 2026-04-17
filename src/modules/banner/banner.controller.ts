@@ -10,7 +10,7 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
-import type { CreateBannerDto, UpdateBannerDto } from './dto/create-banner.dto'
+import { CreateBannerDto, UpdateBannerDto } from './dto/create-banner.dto'
 // eslint-disable-next-line ts/consistent-type-imports
 import { BannerService } from './banner.service'
 
