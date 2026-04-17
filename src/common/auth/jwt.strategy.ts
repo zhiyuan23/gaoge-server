@@ -1,18 +1,25 @@
-import { Injectable } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
+import { Injectable, UnauthorizedException } from '@nestjs/common'
+import type { ConfigService } from '@nestjs/config'
 import { PassportStrategy } from '@nestjs/passport'
 import { ExtractJwt, Strategy } from 'passport-jwt'
+import type { PrismaService } from '../prisma/prisma.service'
 
 export interface JwtPayload {
   sub: number;
-  openid: string;
+  openid?: string | null;
+  account?: string | null;
+  phone?: string | null;
+  role?: string;
   iat: number;
   exp: number;
 }
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly prisma: PrismaService,
+  ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
@@ -20,13 +27,22 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     })
   }
 
-  async validate(payload: any) {
-    const user = {
-      id: Number(payload.sub),
-      openid: payload.openid,
-      phone: payload.phone,
-      role: payload.role || 'user',
+  async validate(payload: JwtPayload) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: Number(payload.sub) },
+    })
+
+    if (!user || user.deletedAt || user.status !== 'active') {
+      throw new UnauthorizedException('用户不存在或已被禁用')
     }
-    return user
+
+    return {
+      id: user.id,
+      openid: user.openid,
+      account: user.account,
+      phone: user.phone,
+      role: user.role,
+      status: user.status,
+    }
   }
 }

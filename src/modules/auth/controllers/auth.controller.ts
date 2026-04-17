@@ -1,34 +1,55 @@
-import type { PhoneLoginDto, RefreshTokenDto, WechatLoginDto } from '../dto/login.dto'
-import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common'
+import type { AdminLoginDto, PhoneLoginDto, RefreshTokenDto, WechatLoginDto } from '../dto/login.dto'
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, UseGuards } from '@nestjs/common'
+import { Roles } from '@/common/auth/roles.decorator'
+import { RolesGuard } from '@/common/auth/roles.guard'
 import { JwtAuthGuard } from '../guards/jwt-auth.guard'
-import { AuthService } from '../services/auth.service'
+import type { AuthService } from '../services/auth.service'
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Post('admin-login')
+  @HttpCode(HttpStatus.OK)
+  adminLogin(@Body() loginDto: AdminLoginDto) {
+    return this.authService.adminLogin(loginDto)
+  }
+
   @Post('wechat-login')
   @HttpCode(HttpStatus.OK)
-  async wechatLogin(@Body() loginDto: WechatLoginDto) {
-    return await this.authService.wechatLogin(loginDto)
+  wechatLogin(@Body() loginDto: WechatLoginDto) {
+    return this.authService.wechatLogin(loginDto)
   }
 
   @Post('phone-login')
   @HttpCode(HttpStatus.OK)
-  async phoneLogin(@Body() loginDto: PhoneLoginDto) {
-    return await this.authService.phoneLogin(loginDto)
+  phoneLogin(@Body() loginDto: PhoneLoginDto) {
+    return this.authService.phoneLogin(loginDto)
   }
 
   @Post('refresh-token')
   @HttpCode(HttpStatus.OK)
-  async refreshToken(@Body() refreshDto: RefreshTokenDto) {
-    return await this.authService.refreshToken(refreshDto.refreshToken)
+  refreshToken(@Body() refreshDto: RefreshTokenDto) {
+    return this.authService.refreshToken(refreshDto.refreshToken)
   }
 
   @Post('logout')
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
-  async logout(@Body() body: { userId: number }) {
-    return await this.authService.logout(body.userId)
+  logout(@Req() request: { user: { id: number } }) {
+    return this.authService.logout(request.user.id)
+  }
+
+  @Get('profile')
+  @UseGuards(JwtAuthGuard)
+  profile(@Req() request: { user: { id: number } }) {
+    return this.authService.getProfile(request.user.id)
+  }
+
+  @Get('permission')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  permission(@Req() request: { user: { id: number } }) {
+    return this.authService.getPermission(request.user.id)
   }
 }

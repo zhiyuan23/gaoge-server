@@ -1,0 +1,8 @@
+ALTER TABLE "User"
+  ALTER COLUMN "openid" DROP NOT NULL;
+
+ALTER TABLE "User"
+  ADD COLUMN IF NOT EXISTS "account" TEXT,
+  ADD COLUMN IF NOT EXISTS "passwordHash" TEXT;
+
+CREATE UNIQUE INDEX IF NOT EXISTS "User_account_key" ON "User"("account");

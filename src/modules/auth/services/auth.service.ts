@@ -1,8 +1,9 @@
-import type { PhoneLoginDto, WechatLoginDto } from '../dto/login.dto'
+import type { AdminLoginDto, PhoneLoginDto, WechatLoginDto } from '../dto/login.dto'
 import { BadRequestException, Injectable, Logger, UnauthorizedException } from '@nestjs/common'
-import { JwtService } from '@nestjs/jwt'
-import { PrismaService } from '../../../common/prisma/prisma.service'
-import { WechatService } from '../../../common/wechat/wechat.service'
+import type { JwtService } from '@nestjs/jwt'
+import type { PrismaService } from '../../../common/prisma/prisma.service'
+import type { WechatService } from '../../../common/wechat/wechat.service'
+import { hashPassword, verifyPassword } from '../../../common/auth/password.util'
 
 export interface LoginResponse {
   user: any;
@@ -13,7 +14,8 @@ export interface LoginResponse {
 
 export interface JwtPayload {
   sub: number;
-  openid: string;
+  openid?: string | null;
+  account?: string | null;
   phone?: string;
   role?: string;
 }
@@ -27,6 +29,43 @@ export class AuthService {
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
   ) {}
+
+  hashAdminPassword = (password: string) => hashPassword(password)
+
+  async adminLogin(loginDto: AdminLoginDto): Promise<LoginResponse> {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        account: loginDto.account,
+      },
+    })
+
+    if (!user?.passwordHash) {
+      throw new UnauthorizedException('账号或密码错误')
+    }
+
+    if (user.deletedAt || user.status !== 'active' || user.role !== 'admin') {
+      throw new UnauthorizedException('当前账号无后台权限')
+    }
+
+    const isPasswordValid = await verifyPassword(loginDto.password, user.passwordHash)
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('账号或密码错误')
+    }
+
+    const updatedUser = await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        lastLoginAt: new Date(),
+      },
+    })
+
+    const tokens = await this.generateTokens(updatedUser)
+
+    return {
+      user: this.serializeUser(updatedUser),
+      ...tokens,
+    }
+  }
 
   /**
    * 微信登录
@@ -69,15 +108,7 @@ export class AuthService {
       this.logger.log('微信登录成功', { userId: user.id, openid: user.openid })
 
       return {
-        user: {
-          id: user.id,
-          openid: user.openid,
-          nickname: user.nickname,
-          avatarUrl: user.avatarUrl,
-          phone: user.phone,
-          role: user.role,
-          lastLoginAt: user.lastLoginAt,
-        },
+        user: this.serializeUser(user),
         ...tokens,
       }
     }
@@ -135,15 +166,7 @@ export class AuthService {
       this.logger.log('手机号登录成功', { userId: user.id, phone: phoneInfo.phoneNumber })
 
       return {
-        user: {
-          id: user.id,
-          openid: user.openid,
-          nickname: user.nickname,
-          avatarUrl: user.avatarUrl,
-          phone: user.phone,
-          role: user.role,
-          lastLoginAt: user.lastLoginAt,
-        },
+        user: this.serializeUser(user),
         ...tokens,
       }
     }
@@ -164,6 +187,7 @@ export class AuthService {
     const payload: JwtPayload = {
       sub: user.id,
       openid: user.openid,
+      account: user.account,
       phone: user.phone,
       role: user.role,
     }
@@ -273,5 +297,58 @@ export class AuthService {
     }
 
     return user
+  }
+
+  async getProfile(userId: number) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    })
+
+    if (!user || user.deletedAt || user.status !== 'active') {
+      throw new UnauthorizedException('用户不存在或已被禁用')
+    }
+
+    return this.serializeUser(user)
+  }
+
+  async getPermission(userId: number) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    })
+
+    if (!user || user.deletedAt || user.status !== 'active') {
+      throw new UnauthorizedException('用户不存在或已被禁用')
+    }
+
+    return {
+      permissions: this.buildPermissions(user.role),
+      role: user.role,
+    }
+  }
+
+  private buildPermissions(role: string) {
+    if (role === 'admin') {
+      return [
+        'player:create',
+        'player:update',
+        'player:delete',
+      ]
+    }
+
+    return []
+  }
+
+  private serializeUser(user: any) {
+    return {
+      id: user.id,
+      account: user.account ?? '',
+      openid: user.openid,
+      nickname: user.nickname,
+      avatarUrl: user.avatarUrl,
+      phone: user.phone,
+      role: user.role,
+      status: user.status,
+      lastLoginAt: user.lastLoginAt,
+    }
   }
 }

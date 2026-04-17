@@ -8,6 +8,7 @@
 
 import type { Prisma } from '@prisma/client'
 import { PrismaClient } from '@prisma/client'
+import { hashPassword } from '../src/common/auth/password.util'
 
 const prisma = new PrismaClient()
 
@@ -28,6 +29,32 @@ const players: Prisma.PlayerCreateInput[] = [
 
 async function main() {
   console.log('🌱 开始播种数据...')
+
+  const adminAccount = process.env.ADMIN_ACCOUNT
+  const adminPassword = process.env.ADMIN_PASSWORD
+
+  if (adminAccount && adminPassword) {
+    await prisma.user.upsert({
+      where: { account: adminAccount },
+      update: {
+        passwordHash: await hashPassword(adminPassword),
+        role: 'admin',
+        status: 'active',
+        nickname: '系统管理员',
+      },
+      create: {
+        account: adminAccount,
+        passwordHash: await hashPassword(adminPassword),
+        role: 'admin',
+        status: 'active',
+        nickname: '系统管理员',
+      },
+    })
+    console.log(`👤 已初始化管理员账号：${adminAccount}`)
+  }
+  else {
+    console.log('⚠️  未提供 ADMIN_ACCOUNT / ADMIN_PASSWORD，跳过管理员账号初始化')
+  }
 
   // 清空现有数据
   await prisma.player.deleteMany({})

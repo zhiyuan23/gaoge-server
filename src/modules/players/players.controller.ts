@@ -9,14 +9,20 @@ import {
   ParseIntPipe,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common'
-import { PlayersService } from './players.service'
+import { Roles } from '@/common/auth/roles.decorator'
+import { RolesGuard } from '@/common/auth/roles.guard'
+import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard'
+import type { PlayersService } from './players.service'
 
 @Controller('players')
 export class PlayersController {
   constructor(private readonly playersService: PlayersService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   create(@Body() dto: CreatePlayerDto) {
     return this.playersService.create(dto)
   }
@@ -32,11 +38,15 @@ export class PlayersController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   update(@Param('id', ParseIntPipe) id: number, @Body() dto: UpdatePlayerDto) {
     return this.playersService.update(id, dto)
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.playersService.remove(id)
   }

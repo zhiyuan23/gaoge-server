@@ -15,8 +15,10 @@ datasource db {
 // ============================================
 model User {
   id        Int        @id @default(autoincrement())
-  openid    String     @unique // 微信 openid
+  openid    String?    @unique // 微信 openid
   unionid   String?    @unique // 微信 unionid
+  account   String?    @unique // 后台登录账号
+  passwordHash String? // 后台密码哈希
   nickname  String?    // 昵称
   avatarUrl String?    // 头像
   phone     String?    @unique // 手机号
