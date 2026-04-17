@@ -3,7 +3,8 @@ import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, UseGuards } fro
 import { Roles } from '@/common/auth/roles.decorator'
 import { RolesGuard } from '@/common/auth/roles.guard'
 import { JwtAuthGuard } from '../guards/jwt-auth.guard'
-import type { AuthService } from '../services/auth.service'
+// eslint-disable-next-line ts/consistent-type-imports
+import { AuthService } from '../services/auth.service'
 
 @Controller('auth')
 export class AuthController {

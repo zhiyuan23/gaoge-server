@@ -1,5 +1,6 @@
 import { Controller, Get } from '@nestjs/common'
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger'
+// eslint-disable-next-line ts/consistent-type-imports
 import { AppService } from './app.service'
 
 @ApiTags('通用')
