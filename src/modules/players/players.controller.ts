@@ -12,8 +12,8 @@ import {
 import { Roles } from '@/common/auth/roles.decorator'
 import { RolesGuard } from '@/common/auth/roles.guard'
 import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard'
-import type { CreatePlayerDto } from './dto/create-player.dto'
-import type { UpdatePlayerDto } from './dto/update-player.dto'
+import { CreatePlayerDto } from './dto/create-player.dto'
+import { UpdatePlayerDto } from './dto/update-player.dto'
 // eslint-disable-next-line ts/consistent-type-imports
 import { PlayersService } from './players.service'
 
