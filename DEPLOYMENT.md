@@ -151,10 +151,10 @@ nano .env
 PORT=3000
 
 # 数据库连接 (替换为你的实际连接字符串)
-DATABASE_URL="postgresql://gaoge_user:your_password@localhost:5432/gaoge"
+DATABASE_URL=postgresql://gaoge_user:your_password@localhost:5432/gaoge
 
 # 或者使用 Prisma Postgres
-# DATABASE_URL="prisma+postgres://..."
+# DATABASE_URL=prisma+postgres://...
 ```
 
 ### 3.3 安装依赖并初始化数据库

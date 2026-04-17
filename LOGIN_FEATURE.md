@@ -132,12 +132,12 @@ Authorization: Bearer <access_token>
 ## 🔧 配置步骤
 
 ### 1. 环境变量配置
-复制 `.env.local` 为 `.env` 并修改：
+复制 `.env.example` 为 `.env.local` 并修改：
 ```bash
-cp .env.local .env
+cp .env.example .env.local
 ```
 
-编辑 `.env` 文件：
+编辑 `.env.local` 文件：
 ```bash
 # 微信小程序配置
 WECHAT_APPID=你的小程序AppID
@@ -148,7 +148,7 @@ JWT_SECRET=your-jwt-secret-key-change-this-in-production
 REFRESH_TOKEN_SECRET=your-refresh-token-secret-change-this-in-production
 
 # 数据库配置
-DATABASE_URL="postgresql://user:password@localhost:5432/gaoge_db?schema=public"
+DATABASE_URL=postgresql://user:password@localhost:5432/gaoge_db?schema=public
 ```
 
 ### 2. 数据库迁移

@@ -21,20 +21,20 @@ node --version
 
 ```bash
 # 复制环境变量模板
-cp .env.local .env
+cp .env.example .env.local
 
-# 编辑 .env 文件
-nano .env
+# 编辑本地开发配置
+nano .env.local
 ```
 
-**`.env` 文件内容：**
+**`.env.local` 文件内容：**
 ```bash
 # 微信小程序配置（必须）
 WECHAT_APPID=你的小程序AppID
 WECHAT_APPSECRET=你的小程序AppSecret
 
 # 数据库配置（必须）
-DATABASE_URL="postgresql://postgres:password@localhost:5432/gaoge_db?schema=public"
+DATABASE_URL=postgresql://postgres:password@localhost:5432/gaoge_db?schema=public
 # 格式：postgresql://用户名:密码@主机:端口/数据库名
 
 # JWT配置（必须）
@@ -44,12 +44,8 @@ JWT_EXPIRES_IN=2h
 REFRESH_TOKEN_EXPIRES_IN=7d
 
 # 应用配置
-APP_PORT=3000
-APP_NAME=gaoge-server
 NODE_ENV=development
-
-# 安全配置
-CORS_ORIGIN=http://localhost:9527
+PORT=3000
 ```
 
 ### 3. 创建数据库
@@ -202,7 +198,7 @@ psql "postgresql://postgres:password@localhost:5432/gaoge_db"
 - 检查网络连接
 
 ### 3. CORS 跨域问题
-确保 `.env` 中的 `CORS_ORIGIN` 包含小程序域名：
+如果你后续把 CORS 改成环境变量，再确保 `.env.local` 或服务器 `.env` 中包含小程序域名：
 ```bash
 CORS_ORIGIN=http://localhost:9527,https://your-miniprogram-domain.com
 ```
@@ -216,7 +212,7 @@ lsof -i :3000
 kill -9 <PID>
 
 # 或修改端口
-APP_PORT=3001
+PORT=3001
 ```
 
 ## 📊 测试 API
@@ -257,7 +253,7 @@ cd gaoge-server
 npm install --production
 
 # 3. 配置生产环境变量
-cp .env.production .env
+nano .env
 
 # 4. 构建
 npm run build
@@ -319,7 +315,7 @@ tail -f logs/wechat.log
 **快速开始命令总结：**
 ```bash
 # 1. 配置环境变量
-cp .env.local .env
+cp .env.example .env.local
 # 编辑 .env，填入微信小程序配置
 
 # 2. 创建数据库

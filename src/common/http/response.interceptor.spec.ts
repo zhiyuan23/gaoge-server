@@ -2,7 +2,7 @@ import type { CallHandler, ExecutionContext } from '@nestjs/common'
 import { of } from 'rxjs'
 import { ResponseInterceptor } from './response.interceptor'
 
-describe('ResponseInterceptor', () => {
+describe('responseInterceptor', () => {
   it('wraps successful responses with the common envelope', (done) => {
     const interceptor = new ResponseInterceptor()
     const next: CallHandler = {

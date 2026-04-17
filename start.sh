@@ -18,26 +18,31 @@ fi
 echo "✅ Node.js 版本 $(node -v)"
 
 # 检查环境变量文件
-if [ ! -f .env ]; then
-    echo "⚠️  找不到 .env 文件"
-    if [ -f .env.local ]; then
-        echo "复制 .env.local 为 .env"
-        cp .env.local .env
-        echo "✅ 请编辑 .env 文件，填入微信小程序配置"
+if [ ! -f .env.local ] && [ ! -f .env ]; then
+    echo "⚠️  找不到 .env.local 或 .env 文件"
+    if [ -f .env.example ]; then
+        cp .env.example .env.local
+        echo "✅ 已从 .env.example 创建 .env.local"
+        echo "   请编辑 .env.local 后重新运行："
         echo "   1. WECHAT_APPID=你的小程序AppID"
         echo "   2. WECHAT_APPSECRET=你的小程序AppSecret"
         echo "   3. DATABASE_URL=你的数据库连接"
         exit 1
     else
-        echo "❌ 找不到环境变量模板 (.env.local)"
+        echo "❌ 找不到环境变量模板 (.env.example)"
         exit 1
     fi
 fi
 
+ENV_FILE=".env.local"
+if [ ! -f "$ENV_FILE" ]; then
+    ENV_FILE=".env"
+fi
+
 # 检查数据库配置
-if grep -q "你的小程序AppID" .env; then
-    echo "❌ 请先配置 .env 文件中的微信小程序信息"
-    echo "   编辑 .env 文件，填入真实的 AppID 和 AppSecret"
+if grep -q "your-wechat-appid" "$ENV_FILE"; then
+    echo "❌ 请先配置 $ENV_FILE 中的微信小程序信息"
+    echo "   编辑 $ENV_FILE，填入真实的 AppID 和 AppSecret"
     exit 1
 fi
 

@@ -1,7 +1,7 @@
 import { BadRequestException } from '@nestjs/common'
 import { HttpExceptionFilter } from './http-exception.filter'
 
-describe('HttpExceptionFilter', () => {
+describe('httpExceptionFilter', () => {
   it('maps validation messages into the common envelope', () => {
     const filter = new HttpExceptionFilter()
     const status = jest.fn().mockReturnThis()
@@ -14,7 +14,7 @@ describe('HttpExceptionFilter', () => {
 
     filter.catch(new BadRequestException(['openid must be a string']), host as any)
 
-    expect(status).toHaveBeenCalledWith(400)
+    expect(status).toHaveBeenCalledWith(200)
     expect(json).toHaveBeenCalledWith({
       code: 400,
       data: null,

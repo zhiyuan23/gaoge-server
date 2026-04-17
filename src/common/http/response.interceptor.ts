@@ -4,9 +4,9 @@ import { Injectable } from '@nestjs/common'
 import { map } from 'rxjs/operators'
 
 export interface ApiResponseEnvelope<T> {
-  code: number
-  data: T
-  errMsg: string
+  code: number;
+  data: T;
+  errMsg: string;
 }
 
 @Injectable()

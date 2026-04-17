@@ -12,15 +12,32 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp()
     const response = ctx.getResponse<Response>()
 
-    const status = exception instanceof HttpException
+    let errorCode = exception instanceof HttpException
       ? exception.getStatus()
       : HttpStatus.INTERNAL_SERVER_ERROR
 
-    response.status(status).json({
-      code: status,
+    const errMsg = this.getErrorMessage(exception, errorCode)
+
+    // 对于Prisma业务错误，使用400作为错误码而不是500
+    if (this.isBusinessError(exception)) {
+      errorCode = 400
+    }
+
+    // 所有错误都返回HTTP 200状态码，在响应体的code字段处理错误状态
+    response.status(HttpStatus.OK).json({
+      code: errorCode,
       data: null,
-      errMsg: this.getErrorMessage(exception, status),
+      errMsg,
     })
+  }
+
+  private isBusinessError(exception: unknown): boolean {
+    // 检查是否是Prisma已知的业务错误
+    if (exception instanceof Error && 'code' in exception) {
+      const prismaError = exception as { code: string }
+      return ['P2002', 'P2025', 'P2003', 'P2000'].includes(prismaError.code)
+    }
+    return false
   }
 
   private getErrorMessage(exception: unknown, status: number): string {

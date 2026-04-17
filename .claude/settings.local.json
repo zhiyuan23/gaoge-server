@@ -16,7 +16,8 @@
       "Read(//Users/snow/Documents/Gaoge/**)",
       "Bash(sed -i '' '59s/const result = //' src/modules/team/team.service.ts)",
       "Bash(pnpm lint:*)",
-      "Bash(pnpm build:*)"
+      "Bash(pnpm build:*)",
+      "Bash(npm run:*)"
     ]
   }
 }
