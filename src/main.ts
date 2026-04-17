@@ -1,6 +1,8 @@
 import { ValidationPipe } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
+import { HttpExceptionFilter } from './common/http/http-exception.filter'
+import { ResponseInterceptor } from './common/http/response.interceptor'
 import { AppModule } from './app.module'
 
 async function bootstrap() {
@@ -9,6 +11,8 @@ async function bootstrap() {
   // 启用 CORS（跨域资源共享）
   app.enableCors({
     origin: [
+      'http://localhost:9000', // Admin 开发
+      'http://127.0.0.1:9000', // Admin 开发
       'http://localhost:9527', // H5 开发
       'http://127.0.0.1:9527', // H5 开发
       'https://gaoge.cc', // 生产域名
@@ -17,7 +21,7 @@ async function bootstrap() {
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Token'],
   })
 
   // Swagger 接口文档配置
@@ -39,6 +43,8 @@ async function bootstrap() {
       transform: true,
     }),
   )
+  app.useGlobalInterceptors(new ResponseInterceptor())
+  app.useGlobalFilters(new HttpExceptionFilter())
 
   await app.listen(process.env.PORT ?? 3000)
 }
