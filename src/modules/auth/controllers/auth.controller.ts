@@ -1,7 +1,7 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Req, UseGuards } from '@nestjs/common'
 import { Roles } from '@/common/auth/roles.decorator'
 import { RolesGuard } from '@/common/auth/roles.guard'
-import type { AdminLoginDto, PhoneLoginDto, RefreshTokenDto, WechatLoginDto } from '../dto/login.dto'
+import { AdminLoginDto, PhoneLoginDto, RefreshTokenDto, WechatLoginDto } from '../dto/login.dto'
 import { JwtAuthGuard } from '../guards/jwt-auth.guard'
 // eslint-disable-next-line ts/consistent-type-imports
 import { AuthService } from '../services/auth.service'
