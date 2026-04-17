@@ -1,4 +1,3 @@
-import type { CreateTeamFundDto, QueryTeamFundDto, UpdateTeamFundDto } from './dto/create-team-fund.dto'
 import {
   Body,
   Controller,
@@ -13,6 +12,7 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
+import type { CreateTeamFundDto, QueryTeamFundDto, UpdateTeamFundDto } from './dto/create-team-fund.dto'
 // eslint-disable-next-line ts/consistent-type-imports
 import { TeamService } from './team.service'
 
