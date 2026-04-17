@@ -13,6 +13,7 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
+// eslint-disable-next-line ts/consistent-type-imports
 import { TeamService } from './team.service'
 
 @Controller('team')

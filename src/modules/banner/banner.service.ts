@@ -1,4 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
+// eslint-disable-next-line ts/consistent-type-imports
 import { PrismaService } from '@/common/prisma/prisma.service'
 import type { CreateBannerDto, UpdateBannerDto } from './dto/create-banner.dto'
 

@@ -1,6 +1,7 @@
 import type { CreatePlayerDto } from './dto/create-player.dto'
 import type { UpdatePlayerDto } from './dto/update-player.dto'
 import { Injectable, NotFoundException } from '@nestjs/common'
+// eslint-disable-next-line ts/consistent-type-imports
 import { PrismaService } from '@/common/prisma/prisma.service'
 
 @Injectable()

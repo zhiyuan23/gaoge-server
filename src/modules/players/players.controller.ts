@@ -14,7 +14,8 @@ import {
 import { Roles } from '@/common/auth/roles.decorator'
 import { RolesGuard } from '@/common/auth/roles.guard'
 import { JwtAuthGuard } from '@/modules/auth/guards/jwt-auth.guard'
-import type { PlayersService } from './players.service'
+// eslint-disable-next-line ts/consistent-type-imports
+import { PlayersService } from './players.service'
 
 @Controller('players')
 export class PlayersController {
