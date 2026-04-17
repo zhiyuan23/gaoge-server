@@ -21,7 +21,7 @@ export class PlayersService {
   async findOne(id: number) {
     const player = await this.prisma.player.findUnique({ where: { id } })
     if (!player) {
-      throw new NotFoundException('Player not found')
+      throw new NotFoundException('球员不存在')
     }
     return player
   }
